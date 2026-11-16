@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f4c3a">
+<title>PSX Wallet</title>
+<style>
+:root{--bg:#eef2ee;--surf:#fff;--ink:#122019;--mut:#617168;--line:#dde5df;--up:#0b8a55;--dn:#d1432f;--acc:#0f4c3a;--sel:#e8f1ec;--sh:0 1px 2px rgba(10,30,20,.06),0 8px 22px rgba(10,30,20,.07);color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0a120e;--surf:#14201a;--ink:#e8f1ec;--mut:#8fa398;--line:#25352c;--up:#3fd08f;--dn:#ff7b6a;--sel:#1b2c23;--acc:#1c7a59;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.up{color:var(--up)}.dn{color:var(--dn)}.mut{color:var(--mut)}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(14px + env(safe-area-inset-top,0px)) 16px 10px}
+.top-in{max-width:640px;margin:0 auto}
+.top h1{margin:0 0 10px;font-size:22px;letter-spacing:-.3px}
+.seg{display:flex;background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:3px;gap:2px}
+.seg[hidden]{display:none}
+.seg button{flex:1;min-width:0;border:0;background:none;color:var(--mut);padding:8px 6px;border-radius:10px;font:inherit;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg button.on{background:var(--acc);color:#fff}
+main{padding:6px 16px 16px;max-width:640px;margin:0 auto;display:grid;gap:14px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--sh)}
+.card h2{margin:0 0 12px;font-size:12px;color:var(--mut);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.hero{border-radius:22px;padding:20px;color:#fff;background:linear-gradient(135deg,#0c3d2f 0%,#0f6b4e 55%,#17a673 100%);box-shadow:0 10px 28px rgba(15,76,58,.35);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-50px;top:-50px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero:before{content:"";position:absolute;right:30px;bottom:-70px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hl{opacity:.8;font-size:13px}
+.hv{font-size:32px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin:2px 0 8px;position:relative;z-index:1}
+.hp{display:inline-block;background:rgba(255,255,255,.2);padding:5px 12px;border-radius:99px;font-weight:600;font-size:14px;position:relative;z-index:1}
+.hg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;position:relative;z-index:1}
+.hg span{display:block;opacity:.75;font-size:12px}.hg b{font-size:15px;font-variant-numeric:tabular-nums}
+.dwrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+.donut{width:176px;height:176px;animation:pop .7s ease both}
+.donut .c1{font:600 11px system-ui,sans-serif;fill:var(--mut)}.donut .c2{font:700 21px system-ui,sans-serif;fill:var(--ink)}
+@keyframes pop{from{opacity:0;transform:scale(.8) rotate(-30deg)}to{opacity:1;transform:none}}
+.leg{flex:1;min-width:150px;display:grid;gap:7px}
+.leg div{display:flex;align-items:center;gap:8px;font-size:14px}.leg i{width:11px;height:11px;border-radius:4px;flex:none}
+.leg span{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--mut)}
+.sb{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--line);margin:2px 0 8px;gap:2px}
+.sb b{display:block;height:100%;transition:width .6s}
+.br{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.br:first-of-type{border-top:0}
+.br .brv{margin-left:auto;text-align:right;line-height:1.25}.br .brv small{display:block;color:var(--mut);font-size:12px}
+.br>b{min-width:78px;text-align:right}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--sel);border-radius:99px;padding:3px 10px 3px 8px;font-size:12px;font-weight:600;vertical-align:middle}
+.chip i{width:9px;height:9px;border-radius:50%}
+.gl{display:grid;grid-template-columns:104px 1fr 74px;gap:8px;align-items:center;margin:9px 0;font-size:13px}
+.bd{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:4px}
+.gl-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-t{position:relative;height:14px;background:var(--sel);border-radius:7px}
+.gl-t .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;margin-left:-1px;background:var(--line)}
+.gl-t b{position:absolute;top:0;height:100%;border-radius:7px}
+.gl-t b.up{background:var(--up)}.gl-t b.dn{background:var(--dn)}
+.gl-v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.tv{margin:12px 0}.tvh{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.tr{position:relative;height:10px;background:var(--sel);border-radius:5px}
+.tr b{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#0f6b4e,#17a673)}
+.tr i{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1px;background:var(--ink);border-radius:2px}
+.hc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px}
+.sym{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;margin-right:6px}
+.tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.pill{padding:5px 10px;border-radius:99px;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.up{background:rgba(11,138,85,.14)}.pill.dn{background:rgba(209,67,47,.14)}
+.hc-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.hc-g span{display:block;font-size:12px;color:var(--mut)}.hc-g b{font-variant-numeric:tabular-nums}
+.hc-p{display:flex;gap:12px;align-items:flex-end;margin-bottom:12px}
+.hc-p label{font-size:12px;color:var(--mut);width:128px;display:flex;flex-direction:column;gap:3px;flex:none}
+.hc-p input{padding:8px 10px}
+.hc-p .sub{font-size:12px;color:var(--mut);line-height:1.5;font-variant-numeric:tabular-nums}
+.acts{display:flex;gap:8px}.acts .btn{flex:1}
+.sc{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.sc small{display:block;color:var(--mut);font-size:12px}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:var(--surf);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.nav button{flex:1;border:0;background:none;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;font-size:11px;font-weight:600;padding:6px 0;border-radius:12px}
+.nav button.on{color:var(--up)}
+.nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fab{position:fixed;right:18px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:7;width:58px;height:58px;border-radius:50%;border:0;background:linear-gradient(135deg,#17a673,#0f6b4e);color:#fff;font-size:32px;line-height:1;box-shadow:0 8px 20px rgba(15,76,58,.45)}
+.fab[hidden]{display:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.ov[hidden]{display:none}
+.sheet{background:var(--surf);width:100%;max-width:640px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;animation:su .25s ease}
+@keyframes su{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{margin:0 0 12px;font-size:18px}
+.fld{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.fld label,.sets label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut)}
+.fld .w{grid-column:1/-1}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;width:100%}
+:focus-visible{outline:2px solid var(--up);outline-offset:1px}
+.btn{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:600;background:var(--sel);color:var(--ink)}
+.btn.pri{background:var(--acc);color:#fff}.btn.dng{background:var(--dn);color:#fff}.btn.sm{padding:9px 12px;font-size:14px}
+.row2{display:flex;gap:8px;margin-top:14px}.row2 .btn{flex:1}
+.pv{margin-top:12px;font-size:14px;min-height:20px}
+.sets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stack{display:grid;gap:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom,0px));background:#122019;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.note{font-size:12px;color:var(--mut);text-align:center;padding:4px 10px}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in"><h1>PSX Wallet</h1><div class="seg" id="seg"></div></div></div>
+<main id="main"></main>
+<button class="fab" id="fab" data-act="add" aria-label="Add purchase">+</button>
+<nav class="nav" id="nav"></nav>
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script src="exceljs.min.js"></script>
+<script>
+var KEY="psxwallet1",H=[],T=[],CGT=15,VIEW=-1,TAB="home",SELI=-1,EDI=-1,RMODE="",LASTBR=0,LAST=0,RAF=0,SO=false;
+var BR=[{n:"Broker 1",f:0},{n:"Broker 2",f:0}];
+var COL=["#17a673","#d9a21b","#3b6fb6","#d1432f","#8b5fbf","#2aa7b8","#9aa32b","#d0589a","#5f6b73"],BC=["#3b6fb6","#d9a21b"];
+try{var s0=JSON.parse(localStorage.getItem(KEY)||"null");if(s0){H=s0.h||[];T=s0.t||[];if(s0.cgt!==undefined)CGT=s0.cgt;if(s0.br&&s0.br.length==2)BR=s0.br;else if(s0.fee){BR[0].f=BR[1].f=s0.fee}}}catch(e){}
+H.forEach(function(h){h.r=h.r||0;h.sc=h.sc||0;h.br=h.br||0});
+var ICON={home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+ list:'<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+ sales:'<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
+ gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'};
+var TABS=[["home","Home",ICON.home],["hold","Holdings",ICON.list],["sales","Sales",ICON.sales],["set","Settings",ICON.gear]];
+function $(i){return document.getElementById(i)}
+function esc(x){return String(x).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function n(x,d){return Number(x).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d})}
+function sg(x,d){return(x>=0?"+":"-")+n(Math.abs(x),d)}
+function cls(x){return x>=0?"up":"dn"}
+function cmp(x){var a=Math.abs(x);return a>=1e6?n(x/1e6,2)+"M":a>=1e3?n(x/1e3,1)+"K":n(x,0)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({h:H,t:T,br:BR,cgt:CGT}))}catch(e){}}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.k);toast.k=setTimeout(function(){t.classList.remove("on")},2800)}
+function calc(h){var f=(BR[h.br||0].f||0)/100,inv=h.q*h.b,val=h.q*h.p,u=h.q?val-inv-(inv+val)*f:0;u=u>0?u*(1-CGT/100):u;var tot=u+h.r,basis=inv+h.sc;
+ return{inv:inv,val:val,u:u,tot:tot,pc:basis?tot/basis*100:0,basis:basis}}
+function sale(h,q,sp){var f=(BR[h.br||0].f||0)/100,p=(sp-h.b)*q-(h.b*q+sp*q)*f,tax=p>0?p*CGT/100:0;return{g:p-tax,tax:tax}}
+function vis(h){return VIEW<0||(h.br||0)==VIEW}
+function agg(){var A={inv:0,val:0,u:0,r:0,tot:0,basis:0},BA=[0,1].map(function(){return{inv:0,val:0,u:0,r:0,tot:0}});
+ H.forEach(function(h){var c=calc(h),b=BA[h.br||0];h.c=c;b.inv+=c.inv;b.val+=c.val;b.u+=c.u;b.r+=h.r;b.tot+=c.tot;
+  if(vis(h)){A.inv+=c.inv;A.val+=c.val;A.u+=c.u;A.r+=h.r;A.tot+=c.tot;A.basis+=c.basis}});
+ return{A:A,BA:BA}}
+function chip(b){return'<span class="chip"><i style="background:'+BC[b]+'"></i>'+esc(BR[b].n)+'</span>'}
+function donut(items,total){var R=70,C=2*Math.PI*R,off=0,segs="";
+ items.forEach(function(it){var len=it.v/total*C,gap=items.length>1?Math.min(3,len*.3):0,d=Math.max(len-gap,.01);
+  segs+='<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="'+it.c+'" stroke-width="24" stroke-dasharray="'+d.toFixed(2)+' '+(C-d).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 100 100)"/>';off+=len});
+ return'<svg class="donut" viewBox="0 0 200 200" role="img" aria-label="Allocation by market value"><circle cx="100" cy="100" r="'+R+'" fill="none" stroke="var(--line)" stroke-width="24"/>'+segs+'<text x="100" y="96" text-anchor="middle" class="c1">MARKET VALUE</text><text x="100" y="120" text-anchor="middle" class="c2">'+cmp(total)+'</text></svg>'}
+function empty(){return'<div class="card" style="text-align:center;padding:30px 18px"><div style="font-size:42px">📈</div><h3 style="margin:8px 0 4px">Your wallet is empty</h3><div class="mut" style="margin-bottom:16px">Add your first purchase to see your charts, gains and losses.</div><div class="row2"><button class="btn pri" data-act="add">Add purchase</button><button class="btn" data-act="example">Load example</button></div></div>'}
+function vHome(g){
+ if(!H.length)return empty();
+ var A=g.A,BA=g.BA,tp=A.basis?A.tot/A.basis*100:0,o="";
+ o+='<div class="hero"><div class="hl">Portfolio value</div><div class="hv" id="hv">PKR '+n(A.val,0)+'</div><div class="hp">'+(A.tot>=0?"▲":"▼")+' '+sg(A.tot,0)+' PKR · '+sg(tp,2)+'%</div><div class="hg"><div><span>Invested</span><b>'+n(A.inv,0)+'</b></div><div><span>Unrealized</span><b>'+sg(A.u,0)+'</b></div><div><span>Realized</span><b>'+sg(A.r,0)+'</b></div></div></div>';
+ var by={};H.forEach(function(h){if(h.q>0&&vis(h))by[h.s]=(by[h.s]||0)+h.c.val});
+ var items=Object.keys(by).map(function(k){return{l:k,v:by[k]}}).filter(function(x){return x.v>0}).sort(function(a,b){return b.v-a.v}).map(function(x,i){x.c=COL[i%COL.length];return x});
+ var tot=items.reduce(function(s,x){return s+x.v},0);
+ if(items.length)o+='<div class="card"><h2>Allocation by market value</h2><div class="dwrap">'+donut(items,tot)+'<div class="leg">'+items.map(function(x){return'<div><i style="background:'+x.c+'"></i>'+esc(x.l)+'<span>'+n(x.v/tot*100,1)+'%</span></div>'}).join("")+'</div></div></div>';
+ var bt=BA[0].val+BA[1].val;
+ o+='<div class="card"><h2>Your brokers</h2>'+(bt?'<div class="sb">'+BA.map(function(b,i){return'<b style="width:'+(b.val/bt*100)+'%;background:'+BC[i]+'"></b>'}).join("")+'</div>':"")+
+  BA.map(function(b,i){return'<div class="br">'+chip(i)+'<div class="brv"><span>'+n(b.val,0)+'</span><small>invested '+n(b.inv,0)+'</small></div><b class="'+cls(b.tot)+'">'+sg(b.tot,0)+'</b></div>'}).join("")+'</div>';
+ var gl=H.filter(vis).map(function(h){return{l:esc(h.s)+(VIEW<0?' <i class="bd" style="background:'+BC[h.br||0]+'"></i>':""),v:h.c.tot}});
+ if(gl.length){var mx=Math.max.apply(null,gl.map(function(x){return Math.abs(x.v)}).concat([1]));
+  o+='<div class="card"><h2>Gain / loss by stock</h2>'+gl.map(function(x){var w=Math.abs(x.v)/mx*50;return'<div class="gl"><div class="gl-l">'+x.l+'</div><div class="gl-t"><i class="mid"></i><b class="'+cls(x.v)+'" style="left:'+(x.v>=0?50:50-w)+'%;width:'+w+'%"></b></div><div class="gl-v '+cls(x.v)+'">'+sg(x.v,0)+'</div></div>'}).join("")+'</div>'}
+ var tg=H.filter(function(h){return vis(h)&&h.q>0&&h.t!==undefined&&h.t!==null});
+ if(tg.length&&A.val)o+='<div class="card"><h2>Target vs actual allocation</h2>'+tg.map(function(h){var a=h.c.val/A.val*100,d=a-h.t;return'<div class="tv"><div class="tvh"><b>'+esc(h.s)+(VIEW<0?' <i class="bd" style="background:'+BC[h.br||0]+'"></i>':"")+'</b><span class="mut">Actual '+n(a,1)+'% · Target '+n(h.t,1)+'% ('+sg(d,1)+')</span></div><div class="tr"><b style="width:'+Math.min(a,100)+'%"></b><i style="left:'+Math.min(h.t,100)+'%"></i></div></div>'}).join("")+'<div class="note">The black marker is your target.</div></div>';
+ o+='<div class="note">Prices are entered by you, not live. Gains are after fees and CGT.</div>';
+ return o}
+function hcard(h,i){var c=h.c,open=h.q>0;
+ return'<div class="card"><div class="hc-top"><div><a class="sym" href="https://dps.psx.com.pk/company/'+encodeURIComponent(h.s)+'" target="_blank" rel="noopener">'+esc(h.s)+'</a>'+chip(h.br||0)+(open?"":' <span class="tag">Closed</span>')+'</div><div class="pill '+cls(c.tot)+'">'+sg(c.tot,0)+' · '+sg(c.pc,1)+'%</div></div>'+
+ '<div class="hc-g"><div><span>Shares</span><b>'+n(h.q,0)+'</b></div><div><span>Avg buy</span><b>'+n(h.b,2)+'</b></div><div><span>Value</span><b>'+n(c.val,0)+'</b></div></div>'+
+ '<div class="hc-p"><label>Current price<input type="number" inputmode="decimal" step="0.01" min="0" value="'+h.p+'" data-p="'+i+'"></label><div class="sub">Unrealized <b class="'+cls(c.u)+'">'+(open?sg(c.u,0):"—")+'</b><br>Realized <b class="'+cls(h.r)+'">'+(h.sc?sg(h.r,0):"—")+'</b>'+(h.t!==undefined&&h.t!==null?'<br>Target '+n(h.t,1)+'%':"")+'</div></div>'+
+ '<div class="acts">'+(open?'<button class="btn sm pri" data-act="sell" data-i="'+i+'">Sell</button>':"")+'<button class="btn sm" data-act="edit" data-i="'+i+'">Edit</button></div></div>'}
+function vHold(){if(!H.length)return empty();var L=H.map(function(h,i){return vis(h)?hcard(h,i):""}).join("");return L||'<div class="card mut" style="text-align:center">No holdings with this broker yet.</div>'}
+function vSales(){var L=T.filter(function(t){return VIEW<0||(t.br||0)==VIEW});
+ if(!L.length)return'<div class="card mut" style="text-align:center;padding:26px">No sales yet. Open Holdings and tap Sell on a stock to record one.</div>';
+ var tg=L.reduce(function(s,t){return s+t.g},0),tx=L.reduce(function(s,t){return s+(t.tx||0)},0);
+ return'<div class="card"><div class="sc"><div><h2 style="margin:0">Realized gain / loss</h2><small>CGT paid '+n(tx,0)+' PKR</small></div><div class="pill '+cls(tg)+'">'+sg(tg,0)+'</div></div></div>'+
+  L.map(function(t){return'<div class="card sc"><div><b style="font-size:17px">'+esc(t.s)+'</b> '+chip(t.br||0)+'<small>'+esc(t.d)+' · '+n(t.q,0)+' sh at '+n(t.sp,2)+' (avg buy '+n(t.b,2)+')</small></div><div style="text-align:right"><b class="'+cls(t.g)+'">'+sg(t.g,0)+'</b><small>CGT '+n(t.tx||0,0)+'</small></div></div>'}).join("")}
+function vSet(){return'<div class="card"><h2>Brokers</h2><div class="sets"><label>Broker 1 name<input data-bn="0" value="'+esc(BR[0].n)+'" maxlength="24"></label><label>Fee % per trade<input data-bf="0" type="number" inputmode="decimal" min="0" step="0.01" value="'+BR[0].f+'"></label><label>Broker 2 name<input data-bn="1" value="'+esc(BR[1].n)+'" maxlength="24"></label><label>Fee % per trade<input data-bf="1" type="number" inputmode="decimal" min="0" step="0.01" value="'+BR[1].f+'"></label></div>'+
+ '<div class="sets"><label>CGT % on gains<input id="cgt" type="number" inputmode="decimal" min="0" step="0.01" value="'+CGT+'"></label></div><div class="note" style="text-align:left;padding:0">Fees apply to both buy and sell. CGT applies to gains only.</div></div>'+
+ '<div class="card"><h2>Data</h2><div class="stack"><button class="btn pri" data-act="export">Export to Excel</button><button class="btn" data-act="resetH">Reset holdings</button><button class="btn" data-act="resetT">Reset sales history</button></div><div class="note" style="margin-top:10px">Your data is stored on this phone only. Export now and then as a backup.</div></div>'}
+function countUp(el,to){if(!el)return;var from=LAST,t0=null;LAST=to;cancelAnimationFrame(RAF);if(from==to)return;
+ function st(ts){if(t0===null)t0=ts;var p=Math.min((ts-t0)/600,1),e=1-Math.pow(1-p,3);el.textContent="PKR "+n(from+(to-from)*e,0);if(p<1)RAF=requestAnimationFrame(st)}RAF=requestAnimationFrame(st)}
+function render(){var g=agg();
+ $("seg").innerHTML=[["-1","All"]].concat(BR.map(function(b,i){return[String(i),b.n]})).map(function(x){return'<button data-act="view" data-v="'+x[0]+'" class="'+(String(VIEW)==x[0]?"on":"")+'">'+esc(x[1])+'</button>'}).join("");
+ $("seg").hidden=TAB=="set";
+ $("main").innerHTML=({home:vHome,hold:vHold,sales:vSales,set:vSet})[TAB](g);
+ $("nav").innerHTML=TABS.map(function(t){return'<button data-act="tab" data-v="'+t[0]+'" class="'+(TAB==t[0]?"on":"")+'">'+t[2]+t[1]+'</button>'}).join("");
+ $("fab").hidden=!(TAB=="home"||TAB=="hold");
+ if(TAB=="home"&&H.length)countUp($("hv"),g.A.val)}
+function openSheet(h){$("sheet").innerHTML=h;$("ov").hidden=false;if(!SO){try{history.pushState({s:1},"")}catch(e){}SO=true}var f=$("sheet").querySelector("input,select");if(f&&f.type!="number")f.focus()}
+function closeSheet(){$("ov").hidden=true;if(SO){SO=false;try{history.back()}catch(e){}}}
+window.addEventListener("popstate",function(){if(SO){SO=false;$("ov").hidden=true}});
+function brOpts(sel){return BR.map(function(b,i){return'<option value="'+i+'"'+(i==sel?" selected":"")+'>'+esc(b.n)+'</option>'}).join("")}
+function openAdd(){openSheet('<h3>Add a purchase</h3><form id="fAdd"><div class="fld"><label class="w">Broker<select id="aBk">'+brOpts(VIEW>=0?VIEW:LASTBR)+'</select></label><label class="w">Symbol<input id="aSy" required maxlength="10" placeholder="OGDC" autocapitalize="characters" autocomplete="off"></label><label>Shares<input id="aSh" type="number" inputmode="numeric" min="1" step="1" required></label><label>Buy price (PKR)<input id="aBp" type="number" inputmode="decimal" min="0" step="0.01" required></label><label class="w">Current price (optional)<input id="aCp" type="number" inputmode="decimal" min="0" step="0.01"></label></div><div class="row2"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn pri" type="submit">Add</button></div></form>')}
+function sellPv(){var h=H[SELI],q=+$("sSh").value,sp=+$("sSp").value,el=$("sPv");if(!h||!(q>0)||!(sp>=0)){el.textContent="";return}var r=sale(h,Math.min(q,h.q),sp);el.innerHTML='This sale: <b class="'+cls(r.g)+'">'+sg(r.g,0)+' PKR</b> after fees'+(r.tax?' and '+n(r.tax,0)+' PKR CGT':"")+'.'}
+function openSell(i){var h=H[i];SELI=i;openSheet('<h3>Sell '+esc(h.s)+' '+chip(h.br||0)+'</h3><form id="fSell"><div class="fld"><label>Shares (you hold '+n(h.q,0)+')<input id="sSh" type="number" inputmode="numeric" min="1" max="'+h.q+'" step="1" value="'+h.q+'" required></label><label>Sell price (PKR)<input id="sSp" type="number" inputmode="decimal" min="0" step="0.01" value="'+h.p+'" required></label></div><div class="pv" id="sPv"></div><div class="row2"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn pri" type="submit">Record sale</button></div></form>');sellPv()}
+function openEdit(i){var h=H[i];EDI=i;openSheet('<h3>Edit '+esc(h.s)+'</h3><form id="fEdit"><div class="fld"><label>Shares<input id="eSh" type="number" inputmode="numeric" min="1" step="1" value="'+h.q+'" required></label><label>Average buy price<input id="eBp" type="number" inputmode="decimal" min="0" step="0.01" value="'+(+h.b.toFixed(4))+'" required></label><label>Broker<select id="eBk">'+brOpts(h.br||0)+'</select></label><label>Target allocation %<input id="eTg" type="number" inputmode="decimal" min="0" max="100" step="0.1" placeholder="optional" value="'+(h.t===undefined||h.t===null?"":h.t)+'"></label></div><div class="note" style="text-align:left;padding:10px 0 0">Use this to correct a typo. It does not record a sale, so realized gains stay the same.</div><div class="row2"><button type="button" class="btn dng" data-act="remove">Remove</button><button type="button" class="btn" data-act="close">Cancel</button><button class="btn pri" type="submit">Save</button></div></form>')}
+function openReset(m){RMODE=m;openSheet('<h3>'+(m=="h"?"Reset holdings":"Reset sales history")+'</h3><div class="mut" style="margin-bottom:12px">'+(m=="h"?"This deletes all holdings, including their realized gains in the totals. Your sales history list is kept.":"This deletes the sales history and sets realized gains and CGT paid back to zero. Shares you still hold are kept.")+' Enter the password to confirm.</div><form id="fReset"><label class="mut" style="font-size:12px">Password<input id="rPw" type="password" autocomplete="off" required></label><div class="dn" id="rMsg" style="margin-top:8px"></div><div class="row2"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn dng" type="submit">Delete</button></div></form>')}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-act]");if(!b){if(e.target.id=="ov")closeSheet();return}
+ var a=b.dataset.act,i=+b.dataset.i;
+ if(a=="tab"){TAB=b.dataset.v;render();window.scrollTo(0,0)}
+ else if(a=="view"){VIEW=+b.dataset.v;render()}
+ else if(a=="add")openAdd();else if(a=="sell")openSell(i);else if(a=="edit")openEdit(i);
+ else if(a=="close")closeSheet();else if(a=="export")exportXlsx();
+ else if(a=="resetH")openReset("h");else if(a=="resetT")openReset("t");
+ else if(a=="example"){H=[{s:"OGDC",q:200,b:285,p:315.3,r:0,sc:0,br:0},{s:"MEBL",q:50,b:520,p:556.25,r:0,sc:0,br:1}];save();render()}
+ else if(a=="remove"){var h=H[EDI];if(h&&confirm("Remove "+h.s+"? Its realized gain is also removed from the totals.")){H.splice(EDI,1);EDI=-1;save();closeSheet();render()}}});
+document.addEventListener("change",function(e){var t=e.target,d=t.dataset||{};
+ if(d.p!==undefined){var v=+t.value;if(v>=0){H[+d.p].p=v;save();render()}}
+ else if(d.bn!==undefined){var k=+d.bn,v2=t.value.trim()||("Broker "+(k+1));if(BR[1-k].n==v2)v2+=" ("+(k+1)+")";BR[k].n=v2;t.value=v2;save();render()}
+ else if(d.bf!==undefined){BR[+d.bf].f=Math.max(0,+t.value||0);save();render()}
+ else if(t.id=="cgt"){CGT=Math.max(0,+t.value||0);save();render()}});
+document.addEventListener("input",function(e){if(e.target.id=="sSh"||e.target.id=="sSp")sellPv()});
+document.addEventListener("submit",function(e){e.preventDefault();var f=e.target.id;
+ if(f=="fAdd"){var br=+$("aBk").value||0,s=$("aSy").value.trim().toUpperCase(),q=+$("aSh").value,b=+$("aBp").value,p=+$("aCp").value||b;if(!s||!(q>0)||!(b>0))return;
+  var h=H.filter(function(x){return x.s==s&&(x.br||0)==br})[0];
+  if(h){h.b=(h.b*h.q+b*q)/(h.q+q);h.q+=q;if($("aCp").value||h.q==q)h.p=p}else H.push({s:s,q:q,b:b,p:p,r:0,sc:0,br:br});
+  LASTBR=br;save();closeSheet();render();toast("Added "+s)}
+ else if(f=="fSell"){var h2=H[SELI],q2=Math.min(+$("sSh").value,h2.q),sp=+$("sSp").value;if(!(q2>0)||!(sp>=0))return;
+  var r=sale(h2,q2,sp);T.unshift({s:h2.s,q:q2,b:h2.b,sp:sp,g:r.g,tx:r.tax,br:h2.br||0,d:new Date().toISOString().slice(0,10)});
+  h2.r+=r.g;h2.sc+=h2.b*q2;h2.q-=q2;h2.p=sp;save();closeSheet();render();toast("Sale recorded")}
+ else if(f=="fEdit"){var g=H[EDI],q3=+$("eSh").value,b3=+$("eBp").value;if(!g||!(q3>0)||!(b3>0))return;
+  g.q=q3;g.b=b3;g.br=+$("eBk").value||0;var tv=$("eTg").value;g.t=tv===""?undefined:Math.max(0,+tv);save();closeSheet();render();toast("Saved")}
+ else if(f=="fReset"){if($("rPw").value!=="12345"){$("rMsg").textContent="Wrong password. Nothing was deleted.";return}
+  if(RMODE=="h"){H=[]}else{T=[];H.forEach(function(h){h.r=0;h.sc=0});H=H.filter(function(h){return h.q>0})}
+  save();closeSheet();render();toast(RMODE=="h"?"Holdings cleared":"Sales history cleared")}});
+document.addEventListener("keydown",function(e){if(e.key=="Escape"&&!$("ov").hidden)closeSheet()});
+async function saveFile(u8,name){
+ var C=window.Capacitor;
+ if(C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.Filesystem&&C.Plugins.Share){
+  var s="",ch=8192;for(var i=0;i<u8.length;i+=ch)s+=String.fromCharCode.apply(null,u8.subarray(i,i+ch));
+  var r=await C.Plugins.Filesystem.writeFile({path:name,data:btoa(s),directory:"CACHE"});
+  await C.Plugins.Share.share({title:name,url:r.uri,dialogTitle:"Save or send your report"});return"saved"}
+ var bl=new Blob([u8],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),u=URL.createObjectURL(bl),a=document.createElement("a");
+ a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);return"saved"}
+async function exportXlsx(){
+ if(!H.length){toast("Add a holding first.");return}
+ if(typeof ExcelJS==="undefined"){toast("The Excel library is missing from this build.");return}
+ try{
+  var wb=new ExcelJS.Workbook(),G="FF0F4C3A",N=H.length,t=4+N,A={inv:0,val:0,u:0,r:0,tot:0,sc:0},BA=[0,1].map(function(){return{inv:0,val:0,u:0,r:0,tot:0}});
+  var fill=function(c){return{type:"pattern",pattern:"solid",fgColor:{argb:c}}};
+  var ws=wb.addWorksheet("Holdings",{views:[{state:"frozen",ySplit:3,xSplit:1}]});
+  ws.addRow(["CGT % on gains",CGT]);ws.addRow(["Broker fee % per trade is set per row in column P"]);
+  var hd=ws.addRow(["Stock","Shares","Avg buy (PKR)","Current price (PKR)","Invested","Value","Unrealized (after CGT)","Realized (after CGT)","Total gain / loss","Cost of shares sold","Total %","Target allocation %","Allocation by cost","Allocation by market value","Broker","Fee % per trade"]);
+  hd.eachCell(function(c){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill(G);c.alignment={horizontal:"center",vertical:"middle",wrapText:true}});hd.height=34;
+  ws.getCell("A1").font={bold:true};ws.getCell("A2").font={italic:true,color:{argb:"FF5D6D64"}};
+  ws.getCell("B1").fill=fill("FFFFF2CC");ws.getCell("B1").font={bold:true,color:{argb:"FF0000FF"}};ws.getCell("B1").numFmt="0.00";
+  var TI=0,TV=0;H.forEach(function(h){var c=calc(h);TI+=c.inv;TV+=c.val});
+  H.forEach(function(h,i){var r=4+i,c=calc(h),bi=h.br||0,b=BA[bi];A.inv+=c.inv;A.val+=c.val;A.u+=c.u;A.r+=h.r;A.tot+=c.tot;A.sc+=h.sc;
+   b.inv+=c.inv;b.val+=c.val;b.u+=c.u;b.r+=h.r;b.tot+=c.tot;
+   var raw="(F"+r+"-E"+r+"-(E"+r+"+F"+r+")*P"+r+"/100)";
+   var row=ws.addRow([h.s,h.q,h.b,h.p,
+    {formula:"B"+r+"*C"+r,result:c.inv},{formula:"B"+r+"*D"+r,result:c.val},
+    {formula:"IF(B"+r+"=0,0,"+raw+"-MAX(0,"+raw+")*$B$1/100)",result:c.u},h.r,
+    {formula:"G"+r+"+H"+r,result:c.tot},h.sc,
+    {formula:"IF(E"+r+"+J"+r+"=0,0,I"+r+"/(E"+r+"+J"+r+"))",result:c.basis?c.tot/c.basis:0},
+    h.t===undefined||h.t===null?null:h.t/100,
+    {formula:"IF(E$"+t+"=0,0,E"+r+"/E$"+t+")",result:TI?c.inv/TI:0},
+    {formula:"IF(F$"+t+"=0,0,F"+r+"/F$"+t+")",result:TV?c.val/TV:0},
+    BR[bi].n,BR[bi].f]);
+   [3,4,16].forEach(function(k){row.getCell(k).font={color:{argb:"FF0000FF"}}});
+   row.getCell(1).font={bold:true}});
+  var S=function(col,res){return{formula:"SUM("+col+"4:"+col+(3+N)+")",result:res}};
+  var tr=ws.addRow(["Total","","","",S("E",A.inv),S("F",A.val),S("G",A.u),S("H",A.r),S("I",A.tot),S("J",A.sc),
+   {formula:"IF(E"+t+"+J"+t+"=0,0,I"+t+"/(E"+t+"+J"+t+"))",result:(A.inv+A.sc)?A.tot/(A.inv+A.sc):0},
+   {formula:"SUM(L4:L"+(3+N)+")",result:H.reduce(function(s,h){return s+(h.t||0)/100},0)},
+   {formula:"SUM(M4:M"+(3+N)+")",result:TI?1:0},{formula:"SUM(N4:N"+(3+N)+")",result:TV?1:0}]);
+  tr.eachCell({includeEmpty:true},function(c){c.font={bold:true};c.fill=fill("FFE6EFE9");c.border={top:{style:"medium",color:{argb:G}}}});
+  for(var r=4;r<=t;r++){["C","D","E","F","G","H","I","J"].forEach(function(c){ws.getCell(c+r).numFmt="#,##0.00;[Red]-#,##0.00"});
+   ws.getCell("B"+r).numFmt="#,##0";["K","L","M","N"].forEach(function(c){ws.getCell(c+r).numFmt="0.0%"});ws.getCell("K"+r).numFmt="0.00%";ws.getCell("P"+r).numFmt="0.00"}
+  var red={font:{color:{argb:"FF9C0006"}},fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFFFC7CE"}}},grn={font:{color:{argb:"FF006100"}},fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFC6EFCE"}}};
+  var cf=function(sheet,ref){sheet.addConditionalFormatting({ref:ref,rules:[{type:"cellIs",operator:"lessThan",formulae:[0],style:red},{type:"cellIs",operator:"greaterThan",formulae:[0],style:grn}]})};
+  cf(ws,"G4:I"+t);cf(ws,"K4:K"+t);
+  ["L4:L"+(3+N),"M4:M"+(3+N),"N4:N"+(3+N)].forEach(function(ref,k){ws.addConditionalFormatting({ref:ref,rules:[{type:"dataBar",cfvo:[{type:"num",value:0},{type:"num",value:1}],color:{argb:["FFD9A21B","FF3B6FB6","FF0F7A5A"][k]},gradient:false}]})});
+  [14,10,14,18,14,14,20,20,18,18,10,16,16,18,16,14].forEach(function(x,k){ws.getColumn(k+1).width=x});
+  var sm=wb.addWorksheet("Summary",{properties:{tabColor:{argb:G}}}),ds=new Date().toISOString().slice(0,10);
+  sm.getColumn(1).width=36;sm.getColumn(2).width=20;[3,4,5,6].forEach(function(k){sm.getColumn(k).width=18});
+  sm.addRow(["PSX Wallet report"]).font={bold:true,size:16,color:{argb:G}};sm.addRow(["Report date",ds]);sm.addRow(["Holdings",N]);sm.addRow([]);
+  [["Invested in open positions (PKR)","E",A.inv],["Current value (PKR)","F",A.val],["Unrealized gain / loss (PKR)","G",A.u],["Realized gain / loss (PKR)","H",A.r],["Cumulative gain / loss (PKR)","I",A.tot]].forEach(function(x){
+   var r=sm.addRow([x[0],{formula:"Holdings!"+x[1]+t,result:x[2]}]);r.getCell(2).numFmt="#,##0;[Red]-#,##0";r.getCell(1).font={bold:true}});
+  var pr=sm.addRow(["Cumulative % on total cost",{formula:"Holdings!K"+t,result:(A.inv+A.sc)?A.tot/(A.inv+A.sc):0}]);pr.getCell(2).numFmt="0.00%";pr.getCell(1).font={bold:true};
+  cf(sm,"B7:B10");
+  sm.addRow([]);
+  var bh=sm.addRow(["By broker","Invested","Value","Unrealized","Realized","Total gain / loss"]);
+  bh.eachCell(function(c){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill(G);c.alignment={horizontal:"center"}});
+  var r0=sm.rowCount+1,rg=function(c){return"Holdings!"+c+"$4:"+c+"$"+(3+N)};
+  [0,1].forEach(function(i){var b=BA[i],rr=sm.rowCount+1;
+   var row=sm.addRow([BR[i].n,{formula:"SUMIF("+rg("O")+",A"+rr+","+rg("E")+")",result:b.inv},{formula:"SUMIF("+rg("O")+",A"+rr+","+rg("F")+")",result:b.val},
+    {formula:"SUMIF("+rg("O")+",A"+rr+","+rg("G")+")",result:b.u},{formula:"SUMIF("+rg("O")+",A"+rr+","+rg("H")+")",result:b.r},{formula:"SUMIF("+rg("O")+",A"+rr+","+rg("I")+")",result:b.tot}]);
+   row.getCell(1).font={bold:true};for(var k=2;k<=6;k++)row.getCell(k).numFmt="#,##0;[Red]-#,##0"});
+  cf(sm,"D"+r0+":F"+(r0+1));
+  sm.addRow([]);sm.addRow(["Prices are entered manually and are not live market data."]).font={italic:true,color:{argb:"FF5D6D64"}};
+  var sh=wb.addWorksheet("Sales",{views:[{state:"frozen",ySplit:1}]});
+  var sr=sh.addRow(["Date","Stock","Broker","Shares sold","Avg buy (PKR)","Sell price (PKR)","CGT paid (PKR)","Realized gain / loss after CGT (PKR)"]);
+  sr.eachCell(function(c){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill(G);c.alignment={horizontal:"center",wrapText:true}});
+  T.forEach(function(x){var r=sh.addRow([x.d,x.s,BR[x.br||0].n,x.q,x.b,x.sp,x.tx||0,x.g]);["E","F","G","H"].forEach(function(c){r.getCell(c).numFmt="#,##0.00;[Red]-#,##0.00"})});
+  [12,10,14,12,14,16,16,28].forEach(function(x,k){sh.getColumn(k+1).width=x});
+  wb.views=[{activeTab:1}];
+  var buf=await wb.xlsx.writeBuffer();
+  await saveFile(new Uint8Array(buf),"psx-wallet-report-"+ds+".xlsx");toast("Report ready")
+ }catch(e){var m=String(e&&e.message||e);if(!/cancel/i.test(m))toast("Couldn’t create the report: "+m)}}
+render();
+</script>
+</body>
+</html>
